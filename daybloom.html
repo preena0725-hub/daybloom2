@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#f5efe6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Daybloom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5efe6;
+    --bg2: #ede5d8;
+    --bg3: #e4d9c8;
+    --card: #fdf9f4;
+    --accent: #b08a9e;
+    --accent2: #c9a8bb;
+    --accent-light: #f0e4eb;
+    --text: #1e1611;
+    --text2: #4a3a30;
+    --text3: #6b5548;
+    --border: #ddd0c2;
+    --green: #7a9e7e;
+    --green-light: #e8f0e9;
+    --red: #c47a6a;
+    --red-light: #f5e8e5;
+    --amber: #c49a4a;
+    --amber-light: #f5edda;
+    --shadow: 0 2px 12px rgba(100,70,50,0.08);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── TOP NAV ── */
+  .topnav {
+    position: fixed;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 56px;
+  }
+  .topnav-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); }
+  .topnav-tabs { display: flex; gap: 4px; }
+  .tab-btn {
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 500;
+    color: var(--text3);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+  }
+  .tab-btn.active { background: var(--accent-light); color: var(--accent); }
+
+  /* ── MAIN CONTENT ── */
+  .main { padding: 72px 16px 100px; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── HOME SCREEN ── */
+  .greeting { margin-bottom: 20px; }
+  .greeting-sub { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+  .greeting-name { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--text); }
+
+  /* Affirmations */
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text2);
+    margin-bottom: 10px;
+  }
+  .affirmations-scroll {
+    display: flex; gap: 10px; overflow-x: auto;
+    padding-bottom: 4px; margin-bottom: 24px;
+    scrollbar-width: none;
+  }
+  .affirmations-scroll::-webkit-scrollbar { display: none; }
+  .affirmation-card {
+    flex: 0 0 220px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    border-radius: var(--radius);
+    padding: 16px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .affirmation-card::before {
+    content: '"';
+    position: absolute; top: -8px; right: 10px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 72px; color: rgba(255,255,255,0.15);
+    line-height: 1;
+  }
+  .affirmation-text { font-size: 13px; line-height: 1.6; font-weight: 400; position: relative; }
+  .affirmation-done-btn {
+    margin-top: 10px; background: rgba(255,255,255,0.2);
+    border: none; color: white; border-radius: 6px;
+    padding: 4px 10px; font-size: 11px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+    transition: background 0.2s;
+  }
+  .affirmation-card.done { opacity: 0.6; }
+  .affirmation-card.done .affirmation-done-btn { background: rgba(255,255,255,0.35); }
+
+  /* Progress bar */
+  .progress-bar-wrap { margin-bottom: 16px; }
+  .progress-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .progress-count { font-size: 12px; color: var(--text2); font-weight: 500; }
+  .progress-bar-bg { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--green) 100%); border-radius: 3px; transition: width 0.4s ease; }
+
+  /* Task list */
+  .task-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+    transition: all 0.2s;
+  }
+  .task-item.missed { border-color: var(--red); background: var(--red-light); }
+  .task-item.completed { opacity: 0.55; }
+
+  .task-check {
+    width: 22px; height: 22px; flex-shrink: 0;
+    border: 2px solid var(--border); border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; background: white;
+  }
+  .task-check.checked { background: var(--green); border-color: var(--green); }
+  .task-check.checked::after { content: '✓'; color: white; font-size: 12px; font-weight: 600; }
+  .task-check.missed-check { border-color: var(--red); }
+
+  .task-body { flex: 1; min-width: 0; }
+  .task-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task-item.completed .task-name { text-decoration: line-through; color: var(--text3); }
+  .task-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+  .task-time { font-size: 11px; color: var(--text2); }
+  .cat-pill {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.03em;
+    padding: 2px 7px; border-radius: 20px;
+    background: var(--accent-light); color: var(--accent);
+  }
+  .missed-badge {
+    font-size: 10px; color: var(--red); font-weight: 600;
+    background: none; padding: 0;
+  }
+  .catchup-btn {
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    background: var(--accent-light); border: none; border-radius: 6px;
+    padding: 4px 9px; cursor: pointer; flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .empty-state {
+    text-align: center; padding: 40px 20px;
+    color: var(--text2); font-size: 14px; line-height: 1.7;
+  }
+    /* Date section headers */
+  .date-section-header {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text2);
+    margin: 18px 0 8px;
+  }
+  .missed-section-header { color: var(--red); }
+
+  /* ── TASKS SCREEN ── */
+  .fab {
+    position: fixed; bottom: 88px; right: calc(50% - 200px);
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--accent); color: white;
+    border: none; font-size: 24px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(176,138,158,0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 90; transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .fab:active { transform: scale(0.93); box-shadow: 0 2px 8px rgba(176,138,158,0.3); }
+
+  .task-row {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 14px;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+  }
+  .task-row-icon { font-size: 18px; }
+  .task-row-body { flex: 1; min-width: 0; }
+  .task-row-name { font-size: 14px; font-weight: 500; }
+  .task-row-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .task-row-actions { display: flex; gap: 6px; }
+  .icon-btn {
+    width: 30px; height: 30px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; transition: all 0.15s;
+  }
+  .icon-btn:active { transform: scale(0.9); }
+  .icon-btn.delete { border-color: var(--red-light); background: var(--red-light); }
+
+  /* ── CATEGORIES SCREEN ── */
+  .cat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+  }
+  .cat-emoji { font-size: 24px; }
+  .cat-info { flex: 1; }
+  .cat-name { font-size: 14px; font-weight: 500; }
+  .cat-count { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* ── SETTINGS SCREEN ── */
+  .settings-section {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 16px; overflow: hidden;
+  }
+  .settings-section-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text2);
+    padding: 12px 16px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .settings-row {
+    padding: 12px 16px;
+    display: flex; align-items: flex-start; gap: 10px;
+    border-bottom: 1px solid var(--bg2);
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row-label { font-size: 13px; color: var(--text2); min-width: 80px; }
+  .settings-input {
+    width: 100%; height: 32px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 0 10px; font-size: 13px; background: var(--bg);
+    font-family: 'DM Sans', sans-serif; color: var(--text);
+    outline: none; transition: border-color 0.2s; box-sizing: border-box;
+  }
+  .settings-input:focus { border-color: var(--accent); }
+  .time-input { width: 120px; flex: none; }
+  .aff-row {
+    padding: 12px 16px; border-bottom: 1px solid var(--bg2);
+  }
+  .aff-row:last-child { border-bottom: none; }
+  .aff-row-num { font-size: 11px; color: var(--text3); margin-bottom: 5px; font-weight: 600; letter-spacing: 0.04em; }
+  .aff-row-reminder { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .aff-row-reminder-label { font-size: 11px; color: var(--text2); white-space: nowrap; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(61,48,40,0.35);
+    z-index: 200; display: flex; align-items: flex-end;
+    justify-content: center; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--card); border-radius: 20px 20px 0 0;
+    padding: 24px 20px 40px; width: 100%; max-width: 430px;
+    transform: translateY(100%); transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-handle {
+    width: 36px; height: 4px; background: var(--border);
+    border-radius: 2px; margin: 0 auto 20px;
+  }
+  .modal-title { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 20px; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; letter-spacing: 0.04em; }
+  .form-input {
+    width: 100%; height: 32px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 0 12px; font-size: 13px; background: var(--bg);
+    font-family: 'DM Sans', sans-serif; color: var(--text);
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23a89080' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+
+  .days-grid { display: flex; gap: 6px; flex-wrap: wrap; }
+  .day-chip {
+    width: 38px; height: 32px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--bg);
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text2); transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .day-chip.selected { background: var(--accent); border-color: var(--accent); color: white; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+  .toggle-label { font-size: 14px; color: var(--text); }
+  .toggle {
+    width: 40px; height: 22px; background: var(--border); border-radius: 11px;
+    position: relative; cursor: pointer; transition: background 0.2s; border: none;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; background: white; border-radius: 50%;
+    transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .toggle.on::after { transform: translateX(18px); }
+
+  .btn-primary {
+    width: 100%; height: 32px; background: var(--accent); color: white;
+    border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.2s; margin-top: 8px;
+  }
+  .btn-primary:active { opacity: 0.85; }
+  .btn-secondary {
+    width: 100%; height: 32px; background: var(--bg2); color: var(--text2);
+    border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 8px;
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottomnav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: var(--card); border-top: 1px solid var(--border);
+    display: flex; z-index: 100; padding: 8px 0 12px;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+    cursor: pointer; background: none; border: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-icon { width: 20px; height: 20px; display: block; margin: 0 auto; }
+  .nav-label { font-size: 10px; font-weight: 500; color: var(--text2); }
+  .nav-item.active .nav-label { color: var(--accent); }
+  .nav-item .nav-icon { color: var(--text2); }
+  .nav-item.active .nav-icon { color: var(--accent); }
+
+  /* ── AUTH SCREEN ── */
+  .auth-screen {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 40px 24px; text-align: center;
+  }
+  .auth-logo { font-family: 'DM Serif Display', serif; font-size: 40px; color: var(--text); margin-bottom: 8px; }
+  .auth-tagline { font-size: 14px; color: var(--text2); margin-bottom: 48px; line-height: 1.6; }
+  .auth-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; width: 100%; max-width: 340px;
+  }
+  .auth-card-title { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 20px; }
+  .auth-input {
+    width: 100%; height: 32px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 0 12px; font-size: 13px; background: var(--bg);
+    font-family: 'DM Sans', sans-serif; color: var(--text);
+    outline: none; margin-bottom: 10px; transition: border-color 0.2s;
+  }
+  .auth-input:focus { border-color: var(--accent); }
+  .auth-btn {
+    width: 100%; height: 32px; background: var(--accent); color: white;
+    border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 12px;
+    transition: opacity 0.2s;
+  }
+  .auth-switch { font-size: 13px; color: var(--text2); }
+  .auth-switch span { color: var(--accent); cursor: pointer; font-weight: 500; }
+  .auth-error { font-size: 12px; color: var(--red); margin-bottom: 8px; text-align: left; }
+
+  .notif-banner {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 14px;
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .notif-banner-text { font-size: 13px; color: var(--text3); flex: 1; line-height: 1.5; }
+  .notif-enable-btn {
+    background: var(--accent); color: white; border: none;
+    border-radius: var(--radius-sm); padding: 0 14px;
+    height: 32px; font-size: 12px; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; flex-shrink: 0;
+  }
+
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: white; border-radius: var(--radius-sm);
+    padding: 10px 18px; font-size: 13px; z-index: 300;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    white-space: nowrap;
+  }
+  /* ── EMOJI PICKER ── */
+  .auth-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 12px 0; color: var(--text3); font-size: 12px;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .google-btn {
+    width: 100%; height: 32px; background: var(--card); color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; margin-bottom: 4px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s;
+  }
+  .google-btn:hover { background: var(--bg2); }
+  .google-btn svg { flex-shrink: 0; }
+  /* ── EMOJI PICKER ── */
+  .emoji-picker-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 6px;
+  }
+  .emoji-option {
+    height: 36px; border-radius: var(--radius-sm);
+    border: 2px solid transparent; background: var(--bg2);
+    font-size: 18px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+  }
+  .emoji-option:hover { background: var(--bg3); }
+  .emoji-option.selected { border-color: var(--accent); background: var(--accent-light); }
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-screen">
+    <div class="auth-logo">Daybloom</div>
+    <div class="auth-tagline">Your calm daily companion for<br>home & life routines.</div>
+    <div class="auth-card">
+      <div class="auth-card-title" id="authTitle">Welcome back</div>
+      <div class="auth-error" id="authError" style="display:none"></div>
+
+      <!-- Google sign-in -->
+      <button class="google-btn" id="googleBtn" onclick="handleGoogleAuth()">
+        <svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="auth-divider">or</div>
+
+      <input class="auth-input" id="authName" type="text" placeholder="Your name" style="display:none">
+      <input class="auth-input" id="authEmail" type="email" placeholder="Email address">
+      <input class="auth-input" id="authPassword" type="password" placeholder="Password">
+      <button class="auth-btn" id="authBtn" onclick="handleAuth()">Sign in</button>
+      <div class="auth-switch" id="authSwitch">No account? <span onclick="toggleAuthMode()">Sign up</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appShell" style="display:none">
+  <!-- Top nav -->
+  <div class="topnav">
+    <div class="topnav-title">Daybloom</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="font-size:12px;color:var(--text2)" id="userGreetShort"></div>
+      <button onclick="signOut()" style="font-size:11px;color:var(--text2);background:none;border:none;cursor:pointer">Sign out</button>
+    </div>
+  </div>
+
+  <!-- Screens -->
+  <div class="main">
+
+    <!-- HOME -->
+    <div class="screen active" id="screen-home">
+      <div class="greeting">
+        <div class="greeting-sub" id="greetingTime">Good morning</div>
+        <div class="greeting-name" id="greetingName">Loading…</div>
+      </div>
+
+      <div id="notifBanner" class="notif-banner" style="display:none">
+        <div class="notif-banner-text">Enable notifications to get task reminders</div>
+        <button class="notif-enable-btn" onclick="requestNotifPermission()">Enable</button>
+      </div>
+
+      <div class="section-label">Affirmations</div>
+      <div class="affirmations-scroll" id="affirmationsScroll"></div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-header">
+          <div class="section-label" style="margin:0">Today's tasks</div>
+          <div class="progress-count" id="progressCount">0 / 0</div>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+
+      <div id="tasksList"></div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="screen" id="screen-tasks">
+      <div class="greeting-sub" style="margin-bottom:4px">Manage</div>
+      <div class="greeting-name" style="margin-bottom:20px">All Tasks</div>
+      <div id="allTasksList"></div>
+      <div id="noTasksMsg" class="empty-state" style="display:none">
+        No tasks yet. Tap + to add your first one!
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="screen" id="screen-categories">
+      <div class="greeting-sub" style="margin-bottom:4px">Organised by</div>
+      <div class="greeting-name" style="margin-bottom:20px">Categories</div>
+      <div id="catsList"></div>
+      <button class="btn-primary" style="margin-top:8px" onclick="openCatModal()">+ Add Category</button>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="screen" id="screen-settings">
+      <div class="greeting-sub" style="margin-bottom:4px">Your</div>
+      <div class="greeting-name" style="margin-bottom:20px">Settings</div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Affirmations</div>
+        <div id="affirmationSettings"></div>
+        <div style="padding:10px 16px">
+          <button class="btn-primary" onclick="saveAffirmations()">Save Affirmations</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Notifications</div>
+        <div class="settings-row">
+          <div class="settings-row-label" style="flex:1;font-size:13px;color:var(--text)">Push reminders</div>
+          <button class="toggle" id="notifToggle" onclick="toggleNotifSetting()"></button>
+        </div>
+        <div class="settings-row">
+          <div style="font-size:12px;color:var(--text2)" id="notifStatus">Status: checking…</div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Account</div>
+        <div class="settings-row">
+          <div style="font-size:13px;color:var(--text);flex:1" id="settingsUserEmail"></div>
+          <button onclick="signOut()" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottomnav">
+    <button class="nav-item active" id="nav-home" onclick="switchTab('home')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M7 18V11h6v7"/></svg>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-item" id="nav-tasks" onclick="switchTab('tasks')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 7h6M7 10h6M7 13h4"/></svg>
+      <span class="nav-label">Tasks</span>
+    </button>
+    <button class="nav-item" id="nav-categories" onclick="switchTab('categories')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 012-2h3l2 2h5a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+      <span class="nav-label">Categories</span>
+    </button>
+    <button class="nav-item" id="nav-settings" onclick="switchTab('settings')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 3v1.5M10 15.5V17M3 10h1.5M15.5 10H17M5.05 5.05l1.06 1.06M13.89 13.89l1.06 1.06M14.95 5.05l-1.06 1.06M6.11 13.89l-1.06 1.06"/></svg>
+      <span class="nav-label">Settings</span>
+    </button>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" id="fabBtn" onclick="openTaskModal()" style="display:none">+</button>
+</div>
+
+<!-- TASK MODAL -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="taskModalTitle">New Task</div>
+    <div class="form-group">
+      <label class="form-label">Task name</label>
+      <input class="form-input" id="taskNameInput" placeholder="e.g. Water the plants">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-input form-select" id="taskCatInput"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Days of week</label>
+      <div class="days-grid" id="daysGrid">
+        <button class="day-chip" data-day="0">Su</button>
+        <button class="day-chip" data-day="1">Mo</button>
+        <button class="day-chip" data-day="2">Tu</button>
+        <button class="day-chip" data-day="3">We</button>
+        <button class="day-chip" data-day="4">Th</button>
+        <button class="day-chip" data-day="5">Fr</button>
+        <button class="day-chip" data-day="6">Sa</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Time</label>
+      <input class="form-input" id="taskTimeInput" type="time" value="08:00">
+    </div>
+    <div class="form-group">
+      <div class="toggle-row">
+        <span class="toggle-label">Enable reminder</span>
+        <button class="toggle on" id="reminderToggle" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="saveTask()">Save Task</button>
+    <button class="btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">New Category</div>
+    <div class="form-group">
+      <label class="form-label">Choose an icon</label>
+      <div class="emoji-picker-grid" id="emojiPickerGrid"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="form-input" id="catNameInput" placeholder="e.g. Garden">
+    </div>
+    <button class="btn-primary" onclick="saveCategory()">Save Category</button>
+    <button class="btn-secondary" onclick="closeModal('catModal')">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA STORE ───
+// Simulated multi-user store using localStorage with user prefix
+let currentUser = null;
+
+const defaultCategories = [
+  { id: 'cat_plants', name: 'Plants', icon: '🌱' },
+  { id: 'cat_spirit', name: 'Spirituality', icon: '🧘' },
+  { id: 'cat_food',   name: 'Food', icon: '🍲' },
+  { id: 'cat_home',   name: 'Home', icon: '🏡' },
+];
+
+const defaultAffirmations = [
+  { id: 'a1', text: 'I am doing enough, and I am enough.' },
+  { id: 'a2', text: 'My home is filled with love and calm.' },
+  { id: 'a3', text: 'I choose peace in every moment.' },
+  { id: 'a4', text: 'I am grateful for this beautiful ordinary day.' },
+  { id: 'a5', text: 'I nourish my family and myself with care.' },
+];
+
+function getAffReminderTime() {
+  return localStorage.getItem(userKey('aff_reminder')) || '07:00';
+}
+function saveAffReminderTime(t) { localStorage.setItem(userKey('aff_reminder'), t); }
+
+function userKey(k) { return `hf_${currentUser.email}_${k}`; }
+
+function getCategories() {
+  const d = localStorage.getItem(userKey('categories'));
+  return d ? JSON.parse(d) : [...defaultCategories];
+}
+function saveCategories(cats) { localStorage.setItem(userKey('categories'), JSON.stringify(cats)); }
+
+function getTasks() {
+  const d = localStorage.getItem(userKey('tasks'));
+  return d ? JSON.parse(d) : [];
+}
+function saveTasks(tasks) { localStorage.setItem(userKey('tasks'), JSON.stringify(tasks)); }
+
+function getAffirmations() {
+  const d = localStorage.getItem(userKey('affirmations'));
+  return d ? JSON.parse(d) : defaultAffirmations.map(a => ({...a}));
+}
+function saveAffirmationsData(affs) { localStorage.setItem(userKey('affirmations'), JSON.stringify(affs)); }
+
+function getCompletions() {
+  const d = localStorage.getItem(userKey('completions'));
+  return d ? JSON.parse(d) : {};
+}
+function saveCompletions(c) { localStorage.setItem(userKey('completions'), JSON.stringify(c)); }
+
+function getAffDone() {
+  const d = localStorage.getItem(userKey('affdone'));
+  return d ? JSON.parse(d) : {};
+}
+function saveAffDone(d) { localStorage.setItem(userKey('affdone'), JSON.stringify(d)); }
+
+// ─── SUPABASE CONFIG (fill in after setup) ───
+const SUPABASE_URL = 'https://jrzgmcjwgwqhqokpmlhq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyemdtY2p3Z3dxaHFva3BtbGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MDAxNDMsImV4cCI6MjA5MDk3NjE0M30.ouik-OqhIdqjEibmpDKYl4zhsAJfdx5_bFPOmyx9-Rg';
+
+function handleGoogleAuth() {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    const err = document.getElementById('authError');
+    err.textContent = 'Google sign-in requires Supabase setup. See the setup guide below, or use email/password for now.';
+    err.style.display = 'block';
+    return;
+  }
+  // Once Supabase is configured, this line does everything:
+  // supabase.auth.signInWithOAuth({ provider: 'google' })
+}
+
+
+let authMode = 'login';
+
+function getUsers() {
+  const d = localStorage.getItem('hf_users');
+  return d ? JSON.parse(d) : {};
+}
+function saveUsers(u) { localStorage.setItem('hf_users', JSON.stringify(u)); }
+
+function toggleAuthMode() {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  const isSignup = authMode === 'signup';
+  document.getElementById('authTitle').textContent = isSignup ? 'Create account' : 'Welcome back';
+  document.getElementById('authBtn').textContent = isSignup ? 'Sign up' : 'Sign in';
+  document.getElementById('authSwitch').innerHTML = isSignup
+    ? 'Have an account? <span onclick="toggleAuthMode()">Sign in</span>'
+    : 'No account? <span onclick="toggleAuthMode()">Sign up</span>';
+  document.getElementById('authName').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('authError').style.display = 'none';
+}
+
+function handleAuth() {
+  const email = document.getElementById('authEmail').value.trim().toLowerCase();
+  const password = document.getElementById('authPassword').value;
+  const name = document.getElementById('authName').value.trim();
+  const errEl = document.getElementById('authError');
+  errEl.style.display = 'none';
+
+  if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; return; }
+
+  const users = getUsers();
+
+  if (authMode === 'signup') {
+    if (!name) { errEl.textContent = 'Please enter your name.'; errEl.style.display = 'block'; return; }
+    if (users[email]) { errEl.textContent = 'An account with this email already exists.'; errEl.style.display = 'block'; return; }
+    users[email] = { email, password, name };
+    saveUsers(users);
+    currentUser = users[email];
+  } else {
+    if (!users[email] || users[email].password !== password) {
+      errEl.textContent = 'Incorrect email or password.'; errEl.style.display = 'block'; return;
+    }
+    currentUser = users[email];
+  }
+
+  localStorage.setItem('hf_session', email);
+  launchApp();
+}
+
+function signOut() {
+  localStorage.removeItem('hf_session');
+  currentUser = null;
+  document.getElementById('authScreen').style.display = 'block';
+  document.getElementById('appShell').style.display = 'none';
+}
+
+function checkSession() {
+  const email = localStorage.getItem('hf_session');
+  if (email) {
+    const users = getUsers();
+    if (users[email]) { currentUser = users[email]; launchApp(); return; }
+  }
+  document.getElementById('authScreen').style.display = 'flex';
+}
+
+// ─── APP LAUNCH ───
+function launchApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('appShell').style.display = 'block';
+  document.getElementById('userGreetShort').textContent = currentUser.name;
+  document.getElementById('settingsUserEmail').textContent = currentUser.email;
+  updateGreeting();
+  renderHome();
+  renderSettings();
+  checkNotifPermission();
+  setupNotifScheduler();
+  switchTab('home');
+}
+
+// ─── GREETING ───
+function updateGreeting() {
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greetingTime').textContent = greet;
+  document.getElementById('greetingName').textContent = currentUser.name;
+}
+
+// ─── TODAY'S DAY ───
+function todayKey() { return new Date().toISOString().slice(0,10); }
+function getTodayTasks() {
+  const dow = new Date().getDay();
+  return getTasks().filter(t => t.is_active && t.days_of_week.includes(dow));
+}
+
+// ─── HOME RENDER ───
+function renderHome() {
+  renderAffirmations();
+  renderTodayTasks();
+}
+
+function renderAffirmations() {
+  const affs = getAffirmations();
+  const done = getAffDone();
+  const today = todayKey();
+  const el = document.getElementById('affirmationsScroll');
+  el.innerHTML = '';
+  affs.forEach(a => {
+    if (!a.text.trim()) return;
+    const isDone = done[today + '_' + a.id];
+    const card = document.createElement('div');
+    card.className = 'affirmation-card' + (isDone ? ' done' : '');
+    card.innerHTML = `<div class="affirmation-text">${a.text}</div>
+      <button class="affirmation-done-btn" onclick="markAffDone('${a.id}')">${isDone ? 'Done' : 'Mark done'}</button>`;
+    el.appendChild(card);
+  });
+}
+
+function markAffDone(id) {
+  const done = getAffDone();
+  const key = todayKey() + '_' + id;
+  done[key] = !done[key];
+  saveAffDone(done);
+  renderAffirmations();
+}
+
+function renderTodayTasks() {
+  const todayTasks = getTodayTasks();
+  const completions = getCompletions();
+  const today = todayKey();
+  const cats = getCategories();
+  const el = document.getElementById('tasksList');
+
+  // Sort by time
+  todayTasks.sort((a, b) => a.time.localeCompare(b.time));
+
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+
+  const done = todayTasks.filter(t => completions[today + '_' + t.id]);
+  const pending = todayTasks.filter(t => !completions[today + '_' + t.id]);
+
+  // Split pending into missed vs upcoming
+  const missed = pending.filter(t => {
+    const [h, m] = t.time.split(':').map(Number);
+    return (h * 60 + m) < nowMins - 5;
+  });
+  const upcoming = pending.filter(t => {
+    const [h, m] = t.time.split(':').map(Number);
+    return (h * 60 + m) >= nowMins - 5;
+  });
+
+  const total = todayTasks.length;
+  const doneCount = done.length;
+  document.getElementById('progressCount').textContent = `${doneCount} / ${total}`;
+  document.getElementById('progressFill').style.width = total ? `${Math.round(doneCount/total*100)}%` : '0%';
+
+  if (total === 0) {
+    el.innerHTML = `<div class="empty-state">No tasks scheduled for today.<br>Add tasks in the Tasks tab.</div>`;
+    return;
+  }
+
+  let html = '';
+
+  if (missed.length) {
+    html += `<div class="date-section-header missed-section-header">⚠ Missed</div>`;
+    missed.forEach(t => { html += taskItemHTML(t, cats, false, true); });
+  }
+  if (upcoming.length) {
+    html += `<div class="date-section-header">Upcoming</div>`;
+    upcoming.forEach(t => { html += taskItemHTML(t, cats, false, false); });
+  }
+  if (done.length) {
+    html += `<div class="date-section-header">Completed</div>`;
+    done.forEach(t => { html += taskItemHTML(t, cats, true, false); });
+  }
+
+  el.innerHTML = html;
+}
+
+function taskItemHTML(t, cats, isCompleted, isMissed) {
+  const cat = cats.find(c => c.id === t.category_id) || { name: 'General', icon: '📌' };
+  const compClass = isCompleted ? ' completed' : isMissed ? ' missed' : '';
+  const checkClass = isCompleted ? ' checked' : isMissed ? ' missed-check' : '';
+  const catchup = isMissed ? `<button class="catchup-btn" onclick="completeTask('${t.id}')">Done anyway</button>` : '';
+  const missedBadge = isMissed ? `<span class="missed-badge">Missed</span>` : '';
+  return `<div class="task-item${compClass}" id="taskitem_${t.id}">
+    <div class="task-check${checkClass}" onclick="completeTask('${t.id}')"></div>
+    <div class="task-body">
+      <div class="task-name">${t.name}</div>
+      <div class="task-meta">
+        <span class="task-time">${formatTime(t.time)}</span>
+        <span class="cat-pill">${cat.icon} ${cat.name}</span>
+        ${missedBadge}
+      </div>
+    </div>
+    ${catchup}
+  </div>`;
+}
+
+function completeTask(id) {
+  const completions = getCompletions();
+  const key = todayKey() + '_' + id;
+  completions[key] = !completions[key];
+  saveCompletions(completions);
+  renderTodayTasks();
+}
+
+function formatTime(t) {
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+// ─── TASKS SCREEN ───
+function renderAllTasks() {
+  const tasks = getTasks();
+  const cats = getCategories();
+  const el = document.getElementById('allTasksList');
+  document.getElementById('noTasksMsg').style.display = tasks.length ? 'none' : 'block';
+  if (!tasks.length) { el.innerHTML = ''; return; }
+  el.innerHTML = tasks.map(t => {
+    const cat = cats.find(c => c.id === t.category_id) || { name: 'General', icon: '·' };
+    const dayNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    const days = t.days_of_week.map(d => dayNames[d]).join(', ');
+    return `<div class="task-row">
+      <div class="task-row-icon">${cat.icon}</div>
+      <div class="task-row-body">
+        <div class="task-row-name">${t.name}</div>
+        <div class="task-row-meta">${formatTime(t.time)} · ${days} · ${cat.name}</div>
+      </div>
+      <div class="task-row-actions">
+        <button class="icon-btn" onclick="editTask('${t.id}')" title="Edit">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2l2 2-6 6H3V8l6-6z"/></svg>
+        </button>
+        <button class="icon-btn delete" onclick="deleteTask('${t.id}')" title="Delete">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h9M5 3V2h3v1M4 3v7a1 1 0 001 1h3a1 1 0 001-1V3"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteTask(id) {
+  if (!confirm('Delete this task?')) return;
+  saveTasks(getTasks().filter(t => t.id !== id));
+  renderAllTasks();
+  renderHome();
+  showToast('Task deleted');
+}
+
+let editingTaskId = null;
+function editTask(id) {
+  const task = getTasks().find(t => t.id === id);
+  if (!task) return;
+  editingTaskId = id;
+  document.getElementById('taskModalTitle').textContent = 'Edit Task';
+  document.getElementById('taskNameInput').value = task.name;
+  populateCatSelect(task.category_id);
+  document.querySelectorAll('.day-chip').forEach(c => {
+    c.classList.toggle('selected', task.days_of_week.includes(Number(c.dataset.day)));
+  });
+  document.getElementById('taskTimeInput').value = task.time;
+  const toggle = document.getElementById('reminderToggle');
+  toggle.className = 'toggle' + (task.reminder_enabled ? ' on' : '');
+  openModal('taskModal');
+}
+
+// ─── CATEGORIES SCREEN ───
+function renderCategories() {
+  const cats = getCategories();
+  const tasks = getTasks();
+  document.getElementById('catsList').innerHTML = cats.map(c => {
+    const count = tasks.filter(t => t.category_id === c.id).length;
+    const isDefault = defaultCategories.find(d => d.id === c.id);
+    return `<div class="cat-card">
+      <div class="cat-emoji">${c.icon}</div>
+      <div class="cat-info">
+        <div class="cat-name">${c.name}</div>
+        <div class="cat-count">${count} task${count !== 1 ? 's' : ''}</div>
+      </div>
+      ${!isDefault ? `<button class="icon-btn delete" onclick="deleteCategory('${c.id}')">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h9M5 3V2h3v1M4 3v7a1 1 0 001 1h3a1 1 0 001-1V3"/></svg>
+      </button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function deleteCategory(id) {
+  if (!confirm('Delete this category? Tasks in it will be unaffected.')) return;
+  saveCategories(getCategories().filter(c => c.id !== id));
+  renderCategories();
+  populateCatSelect();
+}
+
+// ─── EMOJI PRESETS ───
+const EMOJI_PRESETS = [
+  '🌱','🌿','🌸','🌻','🍃',
+  '🍲','🥗','☕','🍞','🧃',
+  '🧘','🙏','📖','🕯️','💆',
+  '🏡','🧹','🛁','🛏️','🪴',
+  '💪','🎨','🎵','✈️','❤️'
+];
+const DEFAULT_EMOJI = '🌿';
+let selectedEmoji = DEFAULT_EMOJI;
+
+function buildEmojiPicker() {
+  const grid = document.getElementById('emojiPickerGrid');
+  grid.innerHTML = EMOJI_PRESETS.map(e =>
+    `<button class="emoji-option${e === selectedEmoji ? ' selected' : ''}" onclick="selectEmoji('${e}')">${e}</button>`
+  ).join('');
+}
+
+function selectEmoji(e) {
+  selectedEmoji = e;
+  document.querySelectorAll('.emoji-option').forEach(btn => {
+    btn.classList.toggle('selected', btn.textContent.trim() === e);
+  });
+}
+
+function openCatModal() {
+  selectedEmoji = DEFAULT_EMOJI;
+  document.getElementById('catNameInput').value = '';
+  buildEmojiPicker();
+  openModal('catModal');
+}
+
+function saveCategory() {
+  const name = document.getElementById('catNameInput').value.trim();
+  if (!name) { showToast('Please enter a category name'); return; }
+  const cats = getCategories();
+  cats.push({ id: 'cat_' + Date.now(), name, icon: selectedEmoji });
+  saveCategories(cats);
+  renderCategories();
+  populateCatSelect();
+  closeModal('catModal');
+  document.getElementById('catNameInput').value = '';
+  showToast('Category saved');
+}
+
+// ─── SETTINGS ───
+function renderSettings() {
+  const affs = getAffirmations();
+  const reminderTime = getAffReminderTime();
+  let html = `<div class="aff-row" style="border-bottom:1px solid var(--bg3)">
+    <div class="aff-row-reminder" style="margin-top:0">
+      <span class="aff-row-reminder-label" style="font-size:12px;font-weight:600;color:var(--text2)">Daily reminder time</span>
+      <input class="settings-input time-input" type="time" id="affReminderTime" value="${reminderTime}">
+    </div>
+  </div>`;
+  affs.forEach((a, i) => {
+    html += `<div class="aff-row">
+      <div class="aff-row-num">${i + 1}</div>
+      <input class="settings-input" data-aff="${i}" data-field="text" value="${a.text}" placeholder="Affirmation ${i + 1}">
+    </div>`;
+  });
+  document.getElementById('affirmationSettings').innerHTML = html;
+}
+
+function saveAffirmations() {
+  const affs = getAffirmations();
+  document.querySelectorAll('[data-aff]').forEach(el => {
+    const i = Number(el.dataset.aff);
+    if (el.dataset.field === 'text') affs[i].text = el.value;
+  });
+  const reminderEl = document.getElementById('affReminderTime');
+  if (reminderEl) saveAffReminderTime(reminderEl.value);
+  saveAffirmationsData(affs);
+  renderAffirmations();
+  scheduleNotifications();
+  showToast('Affirmations saved');
+}
+
+// ─── TASK MODAL ───
+function populateCatSelect(selectedId) {
+  const cats = getCategories();
+  const sel = document.getElementById('taskCatInput');
+  sel.innerHTML = cats.map(c => `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.icon} ${c.name}</option>`).join('');
+}
+
+function openTaskModal() {
+  editingTaskId = null;
+  document.getElementById('taskModalTitle').textContent = 'New Task';
+  document.getElementById('taskNameInput').value = '';
+  populateCatSelect();
+  document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('taskTimeInput').value = '08:00';
+  document.getElementById('reminderToggle').className = 'toggle on';
+  openModal('taskModal');
+}
+
+document.querySelectorAll('.day-chip').forEach(c => {
+  c.addEventListener('click', () => c.classList.toggle('selected'));
+});
+
+function saveTask() {
+  const name = document.getElementById('taskNameInput').value.trim();
+  if (!name) { showToast('Please enter a task name'); return; }
+  const days = [...document.querySelectorAll('.day-chip.selected')].map(c => Number(c.dataset.day));
+  if (!days.length) { showToast('Please select at least one day'); return; }
+  const category_id = document.getElementById('taskCatInput').value;
+  const time = document.getElementById('taskTimeInput').value;
+  const reminder_enabled = document.getElementById('reminderToggle').classList.contains('on');
+
+  const tasks = getTasks();
+  if (editingTaskId) {
+    const i = tasks.findIndex(t => t.id === editingTaskId);
+    if (i >= 0) tasks[i] = { ...tasks[i], name, category_id, days_of_week: days, time, reminder_enabled };
+  } else {
+    tasks.push({ id: 'task_' + Date.now(), name, category_id, days_of_week: days, time, reminder_enabled, is_active: true });
+  }
+  saveTasks(tasks);
+  renderAllTasks();
+  renderHome();
+  closeModal('taskModal');
+  showToast(editingTaskId ? 'Task updated' : 'Task added');
+  scheduleNotifications();
+}
+
+// ─── MODAL HELPERS ───
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
+});
+
+// ─── TABS ───
+function switchTab(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  document.getElementById('nav-' + tab).classList.add('active');
+  document.getElementById('fabBtn').style.display = tab === 'tasks' ? 'flex' : 'none';
+  if (tab === 'tasks') renderAllTasks();
+  if (tab === 'categories') renderCategories();
+  if (tab === 'home') renderHome();
+}
+
+// ─── NOTIFICATIONS ───
+function checkNotifPermission() {
+  const granted = Notification.permission === 'granted';
+  const banner = document.getElementById('notifBanner');
+  const toggle = document.getElementById('notifToggle');
+  const status = document.getElementById('notifStatus');
+
+  if (!('Notification' in window)) {
+    status.textContent = 'Status: not supported in this browser';
+    return;
+  }
+  if (Notification.permission === 'denied') {
+    status.textContent = 'Status: blocked — please allow in browser settings';
+    banner.style.display = 'none';
+  } else if (granted) {
+    banner.style.display = 'none';
+    toggle.classList.add('on');
+    status.textContent = 'Status: enabled ✓';
+  } else {
+    banner.style.display = 'flex';
+    toggle.classList.remove('on');
+    status.textContent = 'Status: not enabled yet';
+  }
+}
+
+function requestNotifPermission() {
+  if (!('Notification' in window)) { showToast('Notifications not supported'); return; }
+  Notification.requestPermission().then(p => {
+    checkNotifPermission();
+    if (p === 'granted') { showToast('Notifications enabled'); scheduleNotifications(); }
+    else showToast('Permission not granted');
+  });
+}
+
+function toggleNotifSetting() {
+  if (Notification.permission !== 'granted') requestNotifPermission();
+  else {
+    document.getElementById('notifToggle').classList.toggle('on');
+    showToast('Notifications toggled');
+  }
+}
+
+// Schedule notifications for today's tasks
+let notifTimers = [];
+function scheduleNotifications() {
+  if (Notification.permission !== 'granted') return;
+  notifTimers.forEach(t => clearTimeout(t));
+  notifTimers = [];
+
+  const todayTasks = getTodayTasks().filter(t => t.reminder_enabled);
+  const now = new Date();
+  const cats = getCategories();
+
+  todayTasks.forEach(task => {
+    const [h, m] = task.time.split(':').map(Number);
+    const taskTime = new Date();
+    taskTime.setHours(h, m, 0, 0);
+    const msUntil = taskTime - now;
+    if (msUntil > 0 && msUntil < 24 * 60 * 60 * 1000) {
+      const cat = cats.find(c => c.id === task.category_id) || { icon: '📌' };
+      const timer = setTimeout(() => {
+        new Notification('Daybloom Reminder', {
+          body: `${cat.icon} Time for: ${task.name}`,
+          icon: '/favicon.ico',
+          badge: '/favicon.ico'
+        });
+      }, msUntil);
+      notifTimers.push(timer);
+    }
+  });
+
+  // Affirmation reminder — single shared time
+  const affTime = getAffReminderTime();
+  if (affTime) {
+    const [ah, am] = affTime.split(':').map(Number);
+    const at = new Date(); at.setHours(ah, am, 0, 0);
+    const ams = at - now;
+    if (ams > 0 && ams < 24 * 60 * 60 * 1000) {
+      const timer = setTimeout(() => {
+        new Notification('Daybloom', { body: 'Time for your affirmations' });
+      }, ams);
+      notifTimers.push(timer);
+    }
+  }
+}
+
+function setupNotifScheduler() {
+  // Reschedule at midnight
+  const now = new Date();
+  const midnight = new Date(); midnight.setHours(24, 0, 0, 0);
+  setTimeout(() => { scheduleNotifications(); setupNotifScheduler(); }, midnight - now);
+  scheduleNotifications();
+}
+
+// ─── TOAST ───
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ─── NOTIFICATION SETTING STATUS ───
+function updateNotifStatus() {
+  const status = document.getElementById('notifStatus');
+  if (!('Notification' in window)) { status.textContent = 'Status: not supported'; return; }
+  const map = { granted: 'Status: enabled ✓', denied: 'Status: blocked — enable in browser settings', default: 'Status: not yet enabled' };
+  status.textContent = map[Notification.permission] || 'Status: unknown';
+}
+
+// ─── INIT ───
+checkSession();
+</script>
+</body>
+</html>
